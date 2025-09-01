@@ -2,5 +2,6 @@
 ## Title: Custom Quest Marker
 ## Notes: Adds * to quests with ID > 26034
 ## Author: Taff
+## SavedVariables: QuestLogFontsDB
 QuestLogFonts.lua
 CustomQuestMarker.lua

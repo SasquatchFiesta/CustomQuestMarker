@@ -146,7 +146,7 @@ SlashCmdList["QUESTFONTS"] = function(msg)
         print("  /questfonts status - Show current settings")
         print("")
         print("Font Settings:")
-        print("  /questfonts font <name> - Set font (frizqt, arialn, morpheus, skurri)")
+        print("  /questfonts font <name> - Set font (frizqt, arialn, morpheus, skurri, custom)")
         print("  /questfonts questsize <size> - Set quest list size (left side)")
         print("  /questfonts titlesize <size> - Set title size")  
         print("  /questfonts textsize <size> - Set text/description size")
@@ -197,7 +197,8 @@ SlashCmdList["QUESTFONTS"] = function(msg)
             frizqt = "Fonts\\FRIZQT__.TTF",
             arialn = "Fonts\\ARIALN.TTF", 
             morpheus = "Fonts\\MORPHEUS.TTF",
-            skurri = "Fonts\\skurri.ttf"
+            skurri = "Fonts\\skurri.ttf",
+            custom = "Fonts\\custom.ttf"
         }
         
         if fontMap[args[2]] then
@@ -206,7 +207,7 @@ SlashCmdList["QUESTFONTS"] = function(msg)
             print("Font set to: " .. args[2])
             if fontsEnabled then ChangeQuestLogFonts() end
         else
-            print("Available fonts: frizqt, arialn, morpheus, skurri")
+            print("Available fonts: frizqt, arialn, morpheus, skurri, custom(if installed)")
         end
         
     elseif args[1] == "questsize" and args[2] then
