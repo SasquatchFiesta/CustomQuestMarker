@@ -22,7 +22,7 @@ local function QuestFunc()
 
                   
                 local matched = true          
-                if questID and questID >= 26037 then
+                if questID and questID >= 26035 then
                     matched = false
                 end
                 -- Add ** as its own tag if not matched
