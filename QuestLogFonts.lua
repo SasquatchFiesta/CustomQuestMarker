@@ -1,11 +1,52 @@
+-- Font customization variables
+local fontsEnabled = false  -- Default to OFF
+
+-- Font settings with defaults
+local fontSettings = {
+    font = "Fonts\\ARIALN.TTF",
+    questListSize = 14,
+    titleSize = 14,
+    textSize = 12,
+    titleFlags = "",
+    textFlags = ""
+}
+
+-- Saved variables
+QuestLogFontsDB = QuestLogFontsDB or {}
+
+local function LoadSettings()
+    if QuestLogFontsDB.enabled ~= nil then
+        fontsEnabled = QuestLogFontsDB.enabled
+    end
+    
+    -- Load font settings
+    if QuestLogFontsDB.settings then
+        for key, value in pairs(QuestLogFontsDB.settings) do
+            if fontSettings[key] ~= nil then
+                fontSettings[key] = value
+            end
+        end
+    end
+end
+
+local function SaveSettings()
+    QuestLogFontsDB.enabled = fontsEnabled
+    QuestLogFontsDB.settings = fontSettings
+end
+
 local function ChangeQuestLogFonts()
-    -- Customize these values to your preference
-    local newFont = "Fonts\\ARIALN.TTF"  -- Change to your preferred font
-    local questListSize = 16  -- Size specifically for quest list titles on the left
-    local titleSize = 14  -- Regular title size for quest details
-    local textSize = 12   -- Reasonable text size
-    local titleFlags = ""  -- Flags for quest titles
-    local textFlags = ""  -- Different flags for quest text/descriptions
+    -- Don't apply fonts if disabled
+    if not fontsEnabled then
+        return
+    end
+    
+    -- Use saved font settings
+    local newFont = fontSettings.font
+    local questListSize = fontSettings.questListSize
+    local titleSize = fontSettings.titleSize
+    local textSize = fontSettings.textSize
+    local titleFlags = fontSettings.titleFlags
+    local textFlags = fontSettings.textFlags
     
     -- Quest Log Title Text (use title flags)
     if QuestLogTitleText then
@@ -88,7 +129,159 @@ local function ChangeQuestLogFonts()
     end
 end
 
--- Create slash command for manual testing
+-- Main slash command handler
+SLASH_QUESTFONTS1 = "/questfonts"
+SlashCmdList["QUESTFONTS"] = function(msg)
+    local args = {}
+    for word in msg:gmatch("%S+") do
+        table.insert(args, word:lower())
+    end
+    
+    if #args == 0 or args[1] == "help" then
+        print("Quest Font Commands:")
+        print("  /questfonts on - Enable quest log fonts")
+        print("  /questfonts off - Disable quest log fonts")
+        print("  /questfonts toggle - Toggle fonts on/off")
+        print("  /questfonts apply - Apply current font settings")
+        print("  /questfonts status - Show current settings")
+        print("")
+        print("Font Settings:")
+        print("  /questfonts font <name> - Set font (frizqt, arialn, morpheus, skurri)")
+        print("  /questfonts questsize <size> - Set quest list size (left side)")
+        print("  /questfonts titlesize <size> - Set title size")  
+        print("  /questfonts textsize <size> - Set text/description size")
+        print("  /questfonts titleflags <flags> - Set title flags (outline, thickoutline, monochrome, none)")
+        print("  /questfonts textflags <flags> - Set text flags")
+        print("")
+        print("Examples:")
+        print("  /questfonts font morpheus")
+        print("  /questfonts questsize 18")
+        print("  /questfonts titleflags outline")
+        
+    elseif args[1] == "on" then
+        fontsEnabled = true
+        SaveSettings()
+        ChangeQuestLogFonts()
+        print("Quest log fonts ENABLED")
+        
+    elseif args[1] == "off" then
+        fontsEnabled = false
+        SaveSettings()
+        print("Quest log fonts DISABLED (requires UI reload to fully reset fonts)")
+        
+    elseif args[1] == "toggle" then
+        fontsEnabled = not fontsEnabled
+        SaveSettings()
+        if fontsEnabled then
+            ChangeQuestLogFonts()
+            print("Quest log fonts ENABLED")
+        else
+            print("Quest log fonts DISABLED (requires UI reload to fully reset fonts)")
+        end
+        
+    elseif args[1] == "apply" then
+        ChangeQuestLogFonts()
+        print("Applied current font settings")
+        
+    elseif args[1] == "status" then
+        print("Quest Fonts Status: " .. (fontsEnabled and "ENABLED" or "DISABLED"))
+        print("Font: " .. fontSettings.font)
+        print("Quest List Size: " .. fontSettings.questListSize)
+        print("Title Size: " .. fontSettings.titleSize)
+        print("Text Size: " .. fontSettings.textSize)
+        print("Title Flags: " .. (fontSettings.titleFlags == "" and "none" or fontSettings.titleFlags))
+        print("Text Flags: " .. (fontSettings.textFlags == "" and "none" or fontSettings.textFlags))
+        
+    elseif args[1] == "font" and args[2] then
+        local fontMap = {
+            frizqt = "Fonts\\FRIZQT__.TTF",
+            arialn = "Fonts\\ARIALN.TTF", 
+            morpheus = "Fonts\\MORPHEUS.TTF",
+            skurri = "Fonts\\skurri.ttf"
+        }
+        
+        if fontMap[args[2]] then
+            fontSettings.font = fontMap[args[2]]
+            SaveSettings()
+            print("Font set to: " .. args[2])
+            if fontsEnabled then ChangeQuestLogFonts() end
+        else
+            print("Available fonts: frizqt, arialn, morpheus, skurri")
+        end
+        
+    elseif args[1] == "questsize" and args[2] then
+        local size = tonumber(args[2])
+        if size and size > 0 and size <= 50 then
+            fontSettings.questListSize = size
+            SaveSettings()
+            print("Quest list size set to: " .. size)
+            if fontsEnabled then ChangeQuestLogFonts() end
+        else
+            print("Size must be a number between 1 and 50")
+        end
+        
+    elseif args[1] == "titlesize" and args[2] then
+        local size = tonumber(args[2])
+        if size and size > 0 and size <= 50 then
+            fontSettings.titleSize = size
+            SaveSettings()
+            print("Title size set to: " .. size)
+            if fontsEnabled then ChangeQuestLogFonts() end
+        else
+            print("Size must be a number between 1 and 50")
+        end
+        
+    elseif args[1] == "textsize" and args[2] then
+        local size = tonumber(args[2])
+        if size and size > 0 and size <= 50 then
+            fontSettings.textSize = size
+            SaveSettings()
+            print("Text size set to: " .. size)
+            if fontsEnabled then ChangeQuestLogFonts() end
+        else
+            print("Size must be a number between 1 and 50")
+        end
+        
+    elseif args[1] == "titleflags" and args[2] then
+        local flagMap = {
+            none = "",
+            outline = "OUTLINE",
+            thickoutline = "THICKOUTLINE",
+            monochrome = "MONOCHROME"
+        }
+        
+        if flagMap[args[2]] ~= nil then
+            fontSettings.titleFlags = flagMap[args[2]]
+            SaveSettings()
+            print("Title flags set to: " .. (args[2] == "none" and "none" or args[2]))
+            if fontsEnabled then ChangeQuestLogFonts() end
+        else
+            print("Available flags: outline, thickoutline, monochrome, none")
+        end
+        
+    elseif args[1] == "textflags" and args[2] then
+        local flagMap = {
+            none = "",
+            outline = "OUTLINE", 
+            thickoutline = "THICKOUTLINE",
+            monochrome = "MONOCHROME"
+        }
+        
+        if flagMap[args[2]] ~= nil then
+            fontSettings.textFlags = flagMap[args[2]]
+            SaveSettings()
+            print("Text flags set to: " .. (args[2] == "none" and "none" or args[2]))
+            if fontsEnabled then ChangeQuestLogFonts() end
+        else
+            print("Available flags: outline, thickoutline, monochrome, none")
+        end
+        
+    else
+        print("Unknown command. Use '/questfonts help' for usage.")
+    end
+end
+
+-- Legacy commands for compatibility
 SLASH_QUESTFONT1 = "/questfont"
 SlashCmdList["QUESTFONT"] = function()
     ChangeQuestLogFonts()
@@ -103,11 +296,14 @@ fontFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" then
         local addonName = ...
         if addonName == "CustomQuestMarker" then
-            -- Delay the font change slightly to ensure UI is ready
-            C_Timer.After(1, ChangeQuestLogFonts)
+            LoadSettings()  -- Load saved settings
+            -- Only apply fonts if enabled
+            if fontsEnabled then
+                C_Timer.After(1, ChangeQuestLogFonts)
+            end
         end
     elseif event == "QUEST_LOG_UPDATE" then
-        ChangeQuestLogFonts()
+        ChangeQuestLogFonts()  -- Will check if enabled inside function
     end
 end)
 
