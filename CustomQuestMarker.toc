@@ -1,0 +1,6 @@
+## Interface: 30300
+## Title: Custom Quest Marker
+## Notes: Adds * to quests with ID > 25486
+## Author: Taff
+## QuestIDs.lua
+CustomQuestMarker.lua
