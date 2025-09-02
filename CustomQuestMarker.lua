@@ -73,7 +73,7 @@ QuestFunc = function()
                     matched = false
                 end
                 -- Use the customizable customTag variable instead of hardcoded "**"
-                local questCustomTag = matched and "" or customTag
+                local questCustomTag = matched and " " or customTag
                
                 title = string.format("[%s%s%s]%s%s",
                     level,
